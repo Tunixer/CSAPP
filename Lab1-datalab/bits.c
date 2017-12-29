@@ -139,7 +139,7 @@ NOTES:
  *   Rating: 1
  */
 int bitAnd(int x, int y) {
-  return 2;
+  return ~(~x|~y);
 }
 /* 
  * getByte - Extract byte n from word x
@@ -150,14 +150,9 @@ int bitAnd(int x, int y) {
  *   Rating: 2
  */
 int getByte(int x, int n) {
-
-
-
-
-
-
-
-  return 2;
+	int y1 = x>>(n<<2);
+	int y2 = (y1>>(1<<2))<<(1<<2);
+	return y1 + ((~y2 + 1)&0x7fffffff)+~(y2&0x80000000); 
 
 }
 /* 
@@ -169,7 +164,9 @@ int getByte(int x, int n) {
  *   Rating: 3 
  */
 int logicalShift(int x, int n) {
-  return 2;
+	int y1 = (x>>n);
+	int y2 = ~(0xffffffff<<(32-n));
+	return y1 & y2;
 }
 /*
  * bitCount - returns count of number of 1's in word
@@ -179,7 +176,11 @@ int logicalShift(int x, int n) {
  *   Rating: 4
  */
 int bitCount(int x) {
-  return 2;
+	x = (x >> 1) & 0x55555555 + x & 0x55555555;
+	x = (x >> 2) & 0x33333333 + x & 0x33333333;
+	x = (x >> 4) & 0x0f0f0f0f + x & 0x0f0f0f0f;
+	x = (x >> 8) & 0x00ff00ff + x & 0x00ff00ff;
+	return (x >> 16) & 0x0000ffff + x & 0x0000ffff; 
 }
 /* 
  * bang - Compute !x without using !
@@ -189,7 +190,11 @@ int bitCount(int x) {
  *   Rating: 4 
  */
 int bang(int x) {
-  return 2;
+	x = (x >> 1) & 0x55555555 | x & 0x55555555;
+	x = (x >> 2) & 0x33333333 | x & 0x33333333;
+	x = (x >> 4) & 0x0f0f0f0f | x & 0x0f0f0f0f;
+	x = (x >> 8) & 0x00ff00ff | x & 0x00ff00ff;
+	return (x >> 16) & 0x0000ffff | x & 0x0000ffff;
 }
 /* 
  * tmin - return minimum two's complement integer 
@@ -198,7 +203,7 @@ int bang(int x) {
  *   Rating: 1
  */
 int tmin(void) {
-  return 2;
+  return 1<<31;
 }
 /* 
  * fitsBits - return 1 if x can be represented as an 
@@ -210,7 +215,7 @@ int tmin(void) {
  *   Rating: 2
  */
 int fitsBits(int x, int n) {
-  return 2;
+	return 2;
 }
 /* 
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -221,7 +226,7 @@ int fitsBits(int x, int n) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
-    return 2;
+	return 2;
 }
 /* 
  * negate - return -x 
@@ -231,7 +236,7 @@ int divpwr2(int x, int n) {
  *   Rating: 2
  */
 int negate(int x) {
-  return 2;
+  return ~x + 1;
 }
 /* 
  * isPositive - return 1 if x > 0, return 0 otherwise 
