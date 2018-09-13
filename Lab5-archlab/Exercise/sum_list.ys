@@ -1,0 +1,58 @@
+#long sun_list(list_ptr ls){
+#	long val = 0;
+#	while(ls){
+#		val += ls->val;
+#		ls = ls->next;
+#	}
+#	return val;
+#}
+
+	.pos	0
+	irmovq	stack,%rsp
+	call main
+	halt
+
+	.align	8
+list:
+ele1:
+	.quad	0x00a
+	.quad	ele2
+ele2:
+	.quad	0x0b0
+	.quad	ele3
+ele3:
+	.quad	0xc00
+	.quad	0
+
+main:
+	irmovq	list,%rdi
+	call	list_sum
+	ret	
+list_sum:
+	irmovq	$0,%rax
+	irmovq	$0,%rbx
+	addq	%rbx,%rdi
+	je	empty
+
+loop:
+	mrmovq	(%rdi),%rbx
+	addq	%rbx,%rax
+	irmovq	$8,%rbx
+	addq	%rbx,%rdi
+	mrmovq	(%rdi),%rdi
+	irmovq	$0,%rbx
+	addq	%rbx,%rdi
+	jne	loop
+	ret
+empty:
+	ret
+
+	.pos 0x200
+stack:
+
+
+
+
+
+
+
