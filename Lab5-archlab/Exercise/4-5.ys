@@ -1,0 +1,85 @@
+#long absSum(long *start, long count)
+# start in %rdi, count in %rsi
+# returned value in %rax
+
+#long absSum(long *start, long count){
+#	if(count<=0){
+#		return 0;	
+#	}
+#	return  abs(*start)+absSum(start+1,count-1);
+#}
+
+#long absSum(long *start, long count){
+#	if(count<=0){
+#		return 0;	
+#	}
+#	int u = abs(*start);
+#	u = u + absSum(start+1,count-1);
+#	return u;
+#}
+
+	.pos	0
+	irmovq	stack,%rsp
+	call main
+	halt
+
+	.align 8
+array:
+	.quad	0x0000000001
+	.quad	0x0000000002
+	.quad	0x0000000003
+	.quad	0x0000000004
+
+
+main:
+	irmovq	array,%rdi
+	irmovq	$4,%rsi
+	call	absSum
+	ret
+
+absSum:
+	irmovq	$0,%r8
+	irmovq	$0,%rax
+	addq	%r8, %rsi
+	jne	recur
+	ret
+recur:
+	pushq	%rbx
+	pushq	%rbp
+	#irmovq	$16,%r8
+	#subq	%r8,%rsp
+	rrmovq	%rdi,%rbp
+	mrmovq	(%rbp), %rbx
+	rrmovq	%rbx,%rdi
+	call	abs
+	rrmovq	%rax,%rbx
+#u = abs(*start)
+	rrmovq	%rbp,%rdi
+	irmovq	$1,%r8
+	subq	%r8,%rsi
+	irmovq	$8,%r8
+	addq	%r8,%rdi
+	call	absSum
+	addq	%rax,%rbx
+#u = u + absSum(start+1,count-1)
+	rrmovq	%rbx,%rax
+	popq	%rbp
+	popq	%rbx
+	#irmovq	$16,%r8
+	#addq	%r8,%rsp
+	ret
+abs:	
+	rrmovq	%rdi,%rax
+	irmovq	$0,%r8
+	addq	%r8,%rdi
+	jl	pos
+	ret
+#if x<0 then x = -x
+pos:
+	irmovq	$0,%r8
+	subq	%r8,%rax
+	ret
+
+	.pos 0x200
+stack:
+	
